@@ -52,9 +52,9 @@ npm start
 
  Frontend Setup
  
-1. Navigate and Install
+1. Navigate and Install:-
 cd frontend
 npm install
 
-2. Start Development Server
+2. Start Development Server:-
 npm run dev
