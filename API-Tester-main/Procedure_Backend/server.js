@@ -5,6 +5,7 @@ const app = express();
 const cors = require('cors');
 const multer = require('multer');
 const {startDailyCountCron,startUserDetailCron} = require('./cronjobs')
+const userRoutes = require('./routes/userRoutes');
  
 
 // const userRoutes = require('./routes/userRoutes');
@@ -19,7 +20,7 @@ app.use(express.json()); //
 
 // Routes
 app.use('/uploads' , express.static('uploads'))
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/users', userRoutes);
 startDailyCountCron();
 startUserDetailCron();
 

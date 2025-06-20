@@ -28,7 +28,7 @@ function startDailyCountCron() {
 
 //cron2
 function startUserDetailCron() {
-  cron.schedule('*/1 * * * *', async () => {
+  cron.schedule('* * * * *', async () => {
     console.log('Cron: Sending detailed user list...');
 
     try {

@@ -5,10 +5,11 @@ import API from "../api/axios";
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
-
+  // const location = useLocation();
   const handleChange = (e) =>
+    // const email = location.state?.email || '';
     setFormData({ ...formData, [e.target.name]: e.target.value });
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -17,6 +18,12 @@ const Login = () => {
       navigate("/profile");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
+      
+      if (err.response?.status === 403) {
+        alert("Redirecting to OTP verification...");
+        navigate("/users/verify-otp", { state: { email: formData.email } });
+      }
+      
     }
   };
 
@@ -96,7 +103,7 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition"
+            className="w-full py-3 bg-gradient-to-r from-blue-400 to-slate-500 hover:bg-indigo-700 text-white font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition"
           >
             Sign In
           </button>

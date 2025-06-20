@@ -15,7 +15,7 @@ const Home = () => {
               Login
             </button>
           </Link>
-          <Link to="/user/register">
+          <Link to="/users/register">
             <button className="bg-gray-200 text-blue-600 px-6 py-2 rounded-xl font-medium hover:bg-gray-300 transition">
               Register
             </button>

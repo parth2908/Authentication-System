@@ -33,6 +33,7 @@ import Profile from "./components/Profile";
 import Home from "./components/Home"; // Optional Home Page
 import UsersPage from "./components/UsersPage";
 import Http from "./components/Http";
+import VerifyOtp from "./components/verifyotp";
 
 function App() {
   return (
@@ -41,7 +42,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/user/register" element={<Register />} />
+          <Route path="/users/register" element={<Register />} />
+          <Route path="/users/verify-otp" element={<VerifyOtp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/all-users" element={<UsersPage />} />

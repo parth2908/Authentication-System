@@ -12,25 +12,25 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("name", form.name);
-    formData.append("email", form.email);
-    formData.append("password", form.password);
-    if (form.file) {
-      formData.append("profilePicture", form.file);
-    }
+  const formData = new FormData();
+  formData.append("name", form.name);
+  formData.append("email", form.email);
+  formData.append("password", form.password);
+  if (form.file) {
+    formData.append("profilePicture", form.file);
+  }
 
-    try {
-      const res = await API.post("/users/register", formData);
-      alert("Registered successfully");
-      navigate("/login");
-    } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
-    }
-  };
+  try {
+    const res = await API.post("/users/register", formData);
+    alert("Registered successfully. Please verify your email.");
+    navigate("/users/verify-otp", { state: { email: res.data.email } });
+  } catch (err) {
+    alert(err.response?.data?.message || "Registration failed");
+  }
+};
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-white flex items-center justify-center px-4">
       <div className="bg-white shadow-lg rounded-xl p-8 max-w-md w-full">
@@ -84,7 +84,7 @@ const Register = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+            className="w-full bg-gradient-to-r from-blue-400 to-slate-500 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
           >
             Register
           </button>

@@ -335,7 +335,7 @@ const Http = () => {
         break;
 
       case "POST":
-        url = `${backendBaseURL}/api/user/register`;
+        url = `${backendBaseURL}/api/users/register`;
         data = new FormData();
         data.append("name", "rajiv");
         data.append("email", "rajiv@g.com");
