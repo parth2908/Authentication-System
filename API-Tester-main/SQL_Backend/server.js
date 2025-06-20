@@ -36,9 +36,9 @@ sequelize.authenticate()
   })
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`✅ Server running on http://localhost:${PORT}`);
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('❌ DB connection error:', err.message);
+    console.error('DB connection error:', err.message);
   });
