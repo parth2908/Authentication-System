@@ -6,7 +6,7 @@ const db = require('./config/db');
 
 //cron1
 function startDailyCountCron() {
-  cron.schedule('* * * * *', async () => {
+  cron.schedule('0 23 * * *', async () => {
     console.log('Cron: Sending user count report...');
 
     try {
@@ -28,7 +28,7 @@ function startDailyCountCron() {
 
 //cron2
 function startUserDetailCron() {
-  cron.schedule('* * * * *', async () => {
+  cron.schedule('0 23 * * *', async () => {
     console.log('Cron: Sending detailed user list...');
 
     try {
