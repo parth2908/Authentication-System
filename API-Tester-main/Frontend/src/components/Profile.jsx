@@ -7,7 +7,7 @@ import API from "../api/axios";
 const Profile = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
- const server_url = "http://localhost:5000/";
+ const server_url = "https://authentication-system-5-1shs.onrender.com";
   const fetchProfile = async () => {
     try {
       const res = await API.get("/users/profile");

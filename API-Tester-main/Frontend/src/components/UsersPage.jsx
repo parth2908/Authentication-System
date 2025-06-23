@@ -6,7 +6,7 @@ const UsersPage = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 8; // Adjust as needed
-  const server_url = "http://localhost:5000/";
+  const server_url = "https://authentication-system-5-1shs.onrender.com";
 
   debugger;
   useEffect(() => {

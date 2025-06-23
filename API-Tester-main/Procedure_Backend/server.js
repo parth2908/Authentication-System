@@ -12,7 +12,7 @@ const userRoutes = require('./routes/userRoutes');
 
 // Middlewares
 app.use(cors(
-   { origin : 'http://localhost:5173'}
+   { origin : 'https://authentication-system-5-1shs.onrender.com'}
 ));
 app.use(express.json()); // 
 
@@ -24,4 +24,4 @@ app.use('/api/users', userRoutes);
 startDailyCountCron();
 startUserDetailCron();
 
-app.listen(5000, () => console.log('Server is running on port 5000'));
+app.listen(51727, () => console.log('Server is running on port 51727'));

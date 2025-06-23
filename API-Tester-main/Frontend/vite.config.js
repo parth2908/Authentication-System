@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // Your backend server
+        target: 'https://authentication-system-5-1shs.onrender.com', // Your backend server
         changeOrigin: true,
         secure: false,
       },

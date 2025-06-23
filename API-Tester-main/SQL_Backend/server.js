@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 app.use('/api/users', userRoutes);
 
 // Start server after DB connection
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 51727;
 
 sequelize.authenticate()
   .then(() => {

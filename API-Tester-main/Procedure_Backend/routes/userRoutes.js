@@ -13,13 +13,4 @@ router.post('/resend-otp', userController.resendOtp);
 router.post('/login', userController.login);
 router.get('/profile', auth, userController.getProfile);
 router.get('/all-users', userController.userList);
-// Update (Full Replace) - PUT
-router.put('/update-user/:id',  userController.replaceUser);
-
-// Partial Update - PATCH
-router.patch('/update-profile/:id',  userController.updateUser);
-
-// Delete User - DELETE
-router.delete('/delete-user/:id', userController.deleteUser);
-
 module.exports = router;
