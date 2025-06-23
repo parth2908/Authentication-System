@@ -53,7 +53,7 @@ const UsersPage = () => {
               <img
                 src={
                   user.profilePicture
-                    ? `${server_url}uploads/${user.profilePicture}`
+                    ? `${server_url}/uploads/${user.profilePicture}`
                     : "/default-profile.png"
                 }
                 alt={user.name}
