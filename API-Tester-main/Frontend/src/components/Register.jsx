@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
-
+import { Link } from "react-router-dom";
 const Register = () => {
   const [form, setForm] = useState({
     name: "",
@@ -90,9 +90,9 @@ const Register = () => {
           </button>
           <p className="text-sm text-center text-gray-600 mt-4">
             Already have an account?{' '}
-            <a href="/login" className="text-blue-600 hover:underline">
+            <Link to="/login" className="text-blue-600 hover:underline">
               Login
-            </a>
+            </Link>
           </p>
         </form>
       </div>

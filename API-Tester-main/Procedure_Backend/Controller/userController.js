@@ -232,7 +232,68 @@ const userList = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
- 
+
+// DELETE USER
+const deleteUser = async (req, res) => {
+  try {
+    const [result] = await db.promise().query("CALL DeleteUser(?)", [req.params.id]);
+    if (result.affectedRows === 0)
+      return res.status(404).json({ message: "User not found" });
+
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ message: err.message || "Server error" });
+  }
+};
+
+// PATCH USER
+const updateUser = async (req, res) => {
+  try {
+    const { name, email, profilePicture } = req.body;
+
+    const [result] = await db.promise().query("CALL UpdateUser(?, ?, ?, ?)", [
+      req.params.id,
+      name || null,
+      email || null,
+      profilePicture || null,
+    ]);
+
+    if (result.affectedRows === 0)
+      return res.status(404).json({ message: "User not found" });
+
+    const [rows] = await db.promise().query("CALL getProfile(?)", [req.params.id]);
+    res.json(rows[0][0]);
+  } catch (err) {
+    console.error("PATCH error:", err);
+    res.status(500).json({ message: err.message || "Server error" });
+  }
+};
+
+// PUT USER
+const replaceUser = async (req, res) => {
+  try {
+    const { name, email, password, profilePicture } = req.body;
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+
+    const [result] = await db.promise().query("CALL ReplaceUserFull(?, ?, ?, ?, ?)", [
+      req.params.id,
+      name,
+      email,
+      hashedPassword,
+      profilePicture,
+    ]);
+
+    if (result.affectedRows === 0)
+      return res.status(404).json({ message: "User not found" });
+
+    const [rows] = await db.promise().query("CALL getProfile(?)", [req.params.id]);
+    res.json(rows[0][0]);
+  } catch (err) {
+    console.error("PUT error:", err);
+    res.status(500).json({ message: err.message || "Server error" });
+  }
+};
 
 
 module.exports = {
@@ -241,5 +302,9 @@ module.exports = {
   getProfile,
   userList,
   verifyOtp, 
-  resendOtp
+  resendOtp,
+  updateUser,
+  replaceUser,
+  deleteUser,
+
 };
