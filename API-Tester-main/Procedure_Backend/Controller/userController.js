@@ -7,7 +7,8 @@ const sendEmail = require('../utils/sendEmail')
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
-  const profilePicture = req.file ? req.file.filename : null;
+const profilePicture = req.file ? req.file.path : null;
+
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
