@@ -42,7 +42,7 @@ const Profile = () => {
                 alt={user.name}
                 src={
                   user.profilePicture
-                    ? `${server_url}/uploads/${user.profilePicture}`
+                    ? `${server_url}${user.profilePicture}`
                     : "/default-profile.png"
                 }
                 sx={{
