@@ -1,7 +1,8 @@
 import axios from "axios";
 
+
 const API = axios.create({
-  baseURL: "https://authentication-system-5-1shs.onrender.com",
+  baseURL: "https://authentication-system-5-1shs.onrender.com/api",
 });
 
 // Automatically attach token if available

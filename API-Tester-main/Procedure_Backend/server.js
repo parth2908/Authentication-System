@@ -12,7 +12,7 @@ const userRoutes = require('./routes/userRoutes');
 
 // Middlewares
 app.use(cors(
-   { origin : 'https://authentication-system-5-1shs.onrender.com'}
+   { origin : 'https://authentication-system-pink.vercel.app'}
 ));
 app.use(express.json()); // 
 
