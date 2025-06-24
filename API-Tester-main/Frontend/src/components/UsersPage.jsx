@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../api/axios";
+import * as XLSX from "xlsx"; 
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -35,6 +36,25 @@ const UsersPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
+   const downloadExcel = () => {
+    if (users.length === 0) return;
+
+    // Prepare data for Excel
+    const data = users.map((user, index) => ({
+      SNo: index + 1,
+      Name: user.name,
+      Email: user.email,
+    }));
+
+    // Create worksheet and workbook
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, "RegisteredUsers.xlsx");
+  };
+
   if (error) return <p className="text-red-500 text-center mt-4">{error}</p>;
 
   return (
@@ -43,6 +63,15 @@ const UsersPage = () => {
         <h2 className="text-4xl font-bold text-center text-gray-800 mb-10">
           All Registered Users
         </h2>
+
+         <div className="flex justify-end mb-6">
+          <button
+            onClick={downloadExcel}
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Download Excel
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
           {currentUsers.map((user) => (
