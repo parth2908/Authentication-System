@@ -234,67 +234,36 @@ const userList = async (req, res) => {
   }
 };
 
-// // DELETE USER
-// const deleteUser = async (req, res) => {
-//   try {
-//     const [result] = await db.promise().query("CALL DeleteUser(?)", [req.params.id]);
-//     if (result.affectedRows === 0)
-//       return res.status(404).json({ message: "User not found" });
+// ✅ Bulk Register (Excel Upload)
+const bulkRegister = async (req, res) => {
+  const users = req.body;
 
-//     res.json({ message: "User deleted successfully" });
-//   } catch (err) {
-//     console.error("Delete error:", err);
-//     res.status(500).json({ message: err.message || "Server error" });
-//   }
-// };
+  if (!Array.isArray(users)) {
+    return res.status(400).json({ message: "Invalid data format." });
+  }
 
-// // PATCH USER
-// const updateUser = async (req, res) => {
-//   try {
-//     const { name, email, profilePicture } = req.body;
+  try {
+    for (const user of users) {
+      const { name, email, password } = user;
+      if (!name || !email || !password) continue;
 
-//     const [result] = await db.promise().query("CALL UpdateUser(?, ?, ?, ?)", [
-//       req.params.id,
-//       name || null,
-//       email || null,
-//       profilePicture || null,
-//     ]);
+      const [existing] = await db.promise().query("SELECT * FROM users WHERE email = ?", [email]);
+      if (existing.length > 0) continue;
 
-//     if (result.affectedRows === 0)
-//       return res.status(404).json({ message: "User not found" });
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-//     const [rows] = await db.promise().query("CALL getProfile(?)", [req.params.id]);
-//     res.json(rows[0][0]);
-//   } catch (err) {
-//     console.error("PATCH error:", err);
-//     res.status(500).json({ message: err.message || "Server error" });
-//   }
-// };
+      await db.promise().query(
+        "INSERT INTO users (name, email, password, is_verified) VALUES (?, ?, ?, ?)",
+        [name, email, hashedPassword, 1] // Mark as verified directly
+      );
+    }
 
-// // PUT USER
-// const replaceUser = async (req, res) => {
-//   try {
-//     const { name, email, password, profilePicture } = req.body;
-//     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-
-//     const [result] = await db.promise().query("CALL ReplaceUserFull(?, ?, ?, ?, ?)", [
-//       req.params.id,
-//       name,
-//       email,
-//       hashedPassword,
-//       profilePicture,
-//     ]);
-
-//     if (result.affectedRows === 0)
-//       return res.status(404).json({ message: "User not found" });
-
-//     const [rows] = await db.promise().query("CALL getProfile(?)", [req.params.id]);
-//     res.json(rows[0][0]);
-//   } catch (err) {
-//     console.error("PUT error:", err);
-//     res.status(500).json({ message: err.message || "Server error" });
-//   }
-// };
+    res.json({ message: "Users registered successfully!" });
+  } catch (err) {
+    console.error("Bulk register error:", err);
+    res.status(500).json({ message: "Error registering users." });
+  }
+};
 
 
 module.exports = {
@@ -304,6 +273,7 @@ module.exports = {
   userList,
   verifyOtp, 
   resendOtp,
+  bulkRegister,
   // updateUser,
   // replaceUser,
   // deleteUser,

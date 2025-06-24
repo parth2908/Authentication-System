@@ -15,7 +15,7 @@ const Navbar = () => {
   return (
     <nav className="bg-gradient-to-r from-blue-300 to-slate-400 text-white px-6 py-4 shadow-md flex justify-between items-center">
       <Link to="/" className="text-xl font-bold">
-        200Ok Solutions
+      AUTHIFY
       </Link>
 
       <div className="flex space-x-4 items-center">
