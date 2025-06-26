@@ -4,6 +4,8 @@ const { request } = require('http');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const sendEmail = require('../utils/sendEmail')
+const XLSX = require("xlsx");
+const fs = require("fs");
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -234,34 +236,147 @@ const userList = async (req, res) => {
   }
 };
 
-// ✅ Bulk Register (Excel Upload)
-const bulkRegister = async (req, res) => {
-  const users = req.body;
 
-  if (!Array.isArray(users)) {
-    return res.status(400).json({ message: "Invalid data format." });
-  }
+// const bulkRegister = async (req, res) => {
+//   if (!req.file) return res.status(400).json({ msg: "No file uploaded" });
+
+//   try {
+//     const workbook = XLSX.readFile(req.file.path);
+//     const sheetName = workbook.SheetNames[0];
+//     const sheet = workbook.Sheets[sheetName];
+//     const users = XLSX.utils.sheet_to_json(sheet);
+
+//     const importResults = [];
+
+//     for (let i = 0; i < users.length; i++) {
+//       const Name = users[i]["Name"]?.trim();
+//       const Email = users[i]["Email"]?.trim().toLowerCase();
+//       const Password = users[i]["Password"]?.trim();
+//       const ProfilePicture = users[i]["profilePicture"]?.trim() || null;
+
+//       if (!Name || !Email || !Password) {
+//         importResults.push({ Email: Email || "Unknown", status: "Missing required fields" });
+//         continue;
+//       }
+
+//       try {
+//         const salt = await bcrypt.genSalt(10);
+//         const hashedPassword = await bcrypt.hash(Password, salt);
+
+//         const [result] = await db.promise().query("CALL InsertUser(?, ?, ?, ?)", [
+//           Name,
+//           Email,
+//           hashedPassword,
+//           ProfilePicture,
+//         ]);
+
+//         const insertedUser = result?.[0]?.[0];
+//         if (!insertedUser) {
+//           importResults.push({ Email, status: "Failed to register" });
+//         } else {
+//           importResults.push({ Email, status: "Imported" });
+//         }
+//       } catch (error) {
+//         console.error("Import user error:", error);
+
+//         if (error.sqlMessage === "User already exists") {
+//           importResults.push({ Email, status: "Already registered" });
+//         } else {
+//           importResults.push({ Email, status: "Error occurred" });
+//         }
+//       }
+//     }
+
+//     fs.unlink(req.file.path, (err) => {
+//       if (err) console.error("Failed to delete uploaded file:", err);
+//     });
+
+//     // Always send 200 status to keep frontend in "success" state
+//     res.status(200).json({ msg: "Import completed", importResults });
+//   } catch (err) {
+//     console.error("Import error:", err);
+
+//     // Even if overall failure happens, send 200 so frontend stays in success state
+//     res.status(200).json({ msg: "Import completed with errors", importResults: [] });
+//   }
+// };
+const bulkRegister = async (req, res) => {
+  if (!req.file) return res.status(400).json({ msg: "No file uploaded" });
 
   try {
-    for (const user of users) {
-      const { name, email, password } = user;
-      if (!name || !email || !password) continue;
+    const workbook = XLSX.readFile(req.file.path);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const users = XLSX.utils.sheet_to_json(sheet);
 
-      const [existing] = await db.promise().query("SELECT * FROM users WHERE email = ?", [email]);
-      if (existing.length > 0) continue;
+    const importResults = [];
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+    for (let i = 0; i < users.length; i++) {
+      const Name = users[i]["Name"]?.trim();
+      const Email = users[i]["Email"]?.trim().toLowerCase();
+      const Password = users[i]["Password"]?.trim();
+      const ProfilePicture = users[i]["profilePicture"]?.trim() || null;
 
-      await db.promise().query(
-        "INSERT INTO users (name, email, password, is_verified) VALUES (?, ?, ?, ?)",
-        [name, email, hashedPassword, 1] // Mark as verified directly
-      );
+      const missingFields = [];
+      if (!Name) missingFields.push("Name");
+      if (!Email) missingFields.push("Email");
+      if (!Password) missingFields.push("Password");
+
+      if (missingFields.length > 0) {
+        importResults.push({
+          Email: Email || "Unknown",
+          status: `Missing ${missingFields.join(", ")}`
+        });
+        continue;
+      }
+
+      try {
+        // Check for duplicate user
+        const [existing] = await db.promise().query(
+          "SELECT * FROM users WHERE email = ?",
+          [Email]
+        );
+
+        if (existing.length > 0) {
+          importResults.push({ Email, status: "Already registered" });
+          continue;
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(Password, salt);
+
+        const [result] = await db.promise().query("CALL InsertUser(?, ?, ?, ?)", [
+          Name,
+          Email,
+          hashedPassword,
+          ProfilePicture,
+        ]);
+
+        const insertedUser = result?.[0]?.[0];
+        if (!insertedUser) {
+          importResults.push({ Email, status: "Failed to register" });
+        } else {
+          importResults.push({ Email, status: "Imported" });
+        }
+      } catch (error) {
+        console.error("Error inserting user:", error);
+        importResults.push({
+          Email,
+          status: error.sqlMessage || "Error occurred"
+        });
+      }
     }
 
-    res.json({ message: "Users registered successfully!" });
+    // Delete file after processing
+    fs.unlink(req.file.path, (err) => {
+      if (err) console.error("Failed to delete uploaded file:", err);
+    });
+
+    res.status(200).json({ msg: "Import completed", importResults });
+
   } catch (err) {
-    console.error("Bulk register error:", err);
-    res.status(500).json({ message: "Error registering users." });
+    console.error("Import error:", err);
+    res.status(500).json({ msg: "Failed to import users" });
   }
 };
 
@@ -274,8 +389,4 @@ module.exports = {
   verifyOtp, 
   resendOtp,
   bulkRegister,
-  // updateUser,
-  // replaceUser,
-  // deleteUser,
-
 };

@@ -7,7 +7,9 @@ import API from "../api/axios";
 const Profile = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-//  const server_url = "https://authentication-system-5-1shs.onrender.com";
+ const server_url = "https://authentication-system-5-1shs.onrender.com";
+// const SERVER_URL = `${import.meta.env.VITE_API_BASE_URL}`;
+
   const fetchProfile = async () => {
     try {
       const res = await API.get("/users/profile");
@@ -40,10 +42,10 @@ const Profile = () => {
             <div className="flex justify-center mb-6">
               <Avatar
                 alt={user.name}
-                src={
-                  user.profilePicture
-                    ? `${user.profilePicture}`
-                    : "/default-profile.png"
+                 src={
+                  user.profilePicture?.startsWith("http")
+                    ? user.profilePicture
+                    : `${server_url}/uploads/${user.profilePicture}`
                 }
                 sx={{
                   width: 140,
