@@ -1,4 +1,4 @@
-const { registerUser, loginUser } = require('../models/userModel');
+// const { registerUser, loginUser } = require('../models/userModel');
 const db = require('../config/db');
 const { request } = require('http');
 const bcrypt = require('bcryptjs');
