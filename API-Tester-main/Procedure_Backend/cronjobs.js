@@ -1,4 +1,3 @@
-// // crons/dailyCountCron.js 
 const cron = require('node-cron');
 const sendEmail = require('./utils/sendEmail');
 const countUsers = require('./utils/countusers');
